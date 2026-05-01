@@ -1,0 +1,23 @@
+import groovy.json.JsonOutput
+
+node {
+    stage('Send Teams Notification') {
+
+        withCredentials([string(credentialsId: 'teams-webhook-url', variable: 'WEBHOOK_URL')]) {
+
+            def payload = JsonOutput.toJson([
+                text: 'test PR Review by taekyung'
+            ])
+
+            def response = httpRequest(
+                httpMode: 'POST',
+                url: WEBHOOK_URL,
+                contentType: 'APPLICATION_JSON',
+                requestBody: payload,
+                validResponseCodes: '200:299'
+            )
+
+            echo "Teams notification sent. Status: ${response.status}"
+        }
+    }
+}
